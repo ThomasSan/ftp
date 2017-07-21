@@ -17,6 +17,32 @@ int		create_server(int port)
 	return (sock);
 }
 
+void	exec_cmd(char *str)
+{
+	char **argv;
+
+	argv = ft_split(str);
+	execv("/bin", argv);
+}
+
+int		main_loop(int cs)
+{
+	int		r;
+	char	buf[1024];
+
+	r = read(cs, buf, 1023);
+	if (r > 0)
+	{
+		if (buf[r - 1] == '\n')
+			r--;
+		buf[r] = '\0';
+		printf("input : %s\n", buf);
+		exec_cmd(buf);
+	}
+	return (0);
+}
+
+
 int     main(int ac, char **av)
 {
 	int					sock;
@@ -28,6 +54,7 @@ int     main(int ac, char **av)
 		usage(av[0]);
 	sock = create_server(ft_atoi(av[1]));
 	cs = X(-1, accept(sock, (struct sockaddr *)&csin, &cslen), "accept()");
+	main_loop(cs);
 	close(cs);
 	close(sock);
     return (0);
