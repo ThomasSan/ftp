@@ -6,10 +6,14 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/mman.h>
 #include <netdb.h>
 #include <errno.h>
 #include <unistd.h>
 #include "libft.h"
+#include <fcntl.h>           /* Definition of AT_* constants */
+#include <sys/stat.h>
+
 
 # define Xv(err,res,str)	(x_void(err,res,str,__FILE__,__LINE__))
 # define X(err,res,str)		(x_int(err,res,str,__FILE__,__LINE__))

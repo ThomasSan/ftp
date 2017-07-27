@@ -20,7 +20,7 @@ $(NAME):
 	@make -C libft/ fclean && make -C libft && make -C libft/ clean
 	@gcc -o $(NAME) $(OBJ) $(LIBRARIES)
 	@mkdir obj && mv $(OBJ) obj
-	@echo ">>>$(NAME) READY<<<"
+	@echo -e ">>>\e[31m$(NAME) READY\e[0m<<<"
 
 clean:
 	@/bin/rm -rf obj

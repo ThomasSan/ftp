@@ -1,4 +1,5 @@
 #include "server.h"
+#include <errno.h>
 #include "libft.h"
 
 int		create_server(int port)
@@ -17,12 +18,31 @@ int		create_server(int port)
 	return (sock);
 }
 
-void	exec_cmd(char *str)
+void	go_exe(char **argv)
 {
-	char **argv;
+	if (execv("/bin/ls", argv) == -1)
+		printf("err  : %s", strerror(errno));
+}
 
+void	exec_cmd(int sock, char *str)
+{
+	char		**argv;
+	char		*s = "ls > /tmp/file";
+	struct stat	file;
+	int			fd;
+	void		*ptr;
 	argv = ft_split(str);
-	execv("/bin", argv);
+	(void)argv;
+	(void)s;
+	fd = 0;
+	go_exe(argv);
+	printf("HERE I AM\n");
+	X(-1, open("/tmp/file", O_RDONLY), "open()");
+	X(-1, fstat(fd, &file), "stat()");
+	printf("size %lu\n", file.st_size);
+	ptr = mmap(0, file.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	printf("HERE I AM\n");
+	send(sock, ptr, file.st_size, 0);
 }
 
 int		main_loop(int cs)
@@ -30,14 +50,13 @@ int		main_loop(int cs)
 	int		r;
 	char	buf[1024];
 
-	r = read(cs, buf, 1023);
-	if (r > 0)
+	while((r = recv(cs, buf, 1023, 0)))
 	{
 		if (buf[r - 1] == '\n')
 			r--;
 		buf[r] = '\0';
 		printf("input : %s\n", buf);
-		exec_cmd(buf);
+		exec_cmd(cs, buf);
 	}
 	return (0);
 }
